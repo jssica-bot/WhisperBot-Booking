@@ -6,19 +6,12 @@ require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 10000;
-const mongoURI = process.env.MONGODB_URI;
 
-if (!mongoURI) {
-  console.error('❌ ERROR: MONGODB_URI is not defined in environment variables!');
-  process.exit(1); // stop the server
-}
-
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-mongoose.connect(mongoURI, {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
@@ -41,21 +34,20 @@ const bookingSchema = new mongoose.Schema({
 });
 const Booking = mongoose.model('Booking', bookingSchema);
 
-// POST API
+// API route
 app.post('/api/book', async (req, res) => {
   try {
     const booking = new Booking(req.body);
     await booking.save();
     res.status(200).send('✅ Booking saved');
   } catch (err) {
-    console.error('❌ Error saving booking:', err);
+    console.error(err);
     res.status(500).send('❌ Failed to save booking');
   }
 });
 
-// Simple test route
 app.get('/', (req, res) => {
-  res.send('🎉 WhisperBot booking backend is live!');
+  res.send('📡 Booking backend is live');
 });
 
 app.listen(port, () => {
