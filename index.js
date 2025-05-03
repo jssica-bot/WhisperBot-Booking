@@ -37,19 +37,13 @@ const Booking = mongoose.model('Booking', bookingSchema);
 // API route
 app.post('/api/book', async (req, res) => {
   try {
+    console.log('📥 Received data:', req.body); // 👉 Tambahan log input dari Netlify
     const booking = new Booking(req.body);
     await booking.save();
     res.status(200).send('✅ Booking saved');
   } catch (err) {
-    console.error(err);
+    console.error('❌ Failed to save booking:', err); // 👉 Log error-nya lengkap
     res.status(500).send('❌ Failed to save booking');
   }
 });
 
-app.get('/', (req, res) => {
-  res.send('📡 Booking backend is live');
-});
-
-app.listen(port, () => {
-  console.log(`🚀 Server running on port ${port}`);
-});
