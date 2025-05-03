@@ -6,6 +6,7 @@ require('dotenv').config();
 
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -36,12 +37,12 @@ const Booking = mongoose.model('Booking', bookingSchema);
 // API route
 app.post('/api/book', async (req, res) => {
   try {
-    console.log('📥 Received data:', req.body); // Debug log
+    console.log('📥 Received data:', req.body);
     const booking = new Booking(req.body);
     await booking.save();
     res.status(200).send('✅ Booking saved');
   } catch (err) {
-    console.error('❌ Failed to save booking:', err); // Detailed error log
+    console.error('❌ Failed to save booking:', err);
     res.status(500).send('❌ Failed to save booking');
   }
 });
@@ -51,7 +52,8 @@ app.get('/', (req, res) => {
   res.send('📡 WhisperBot Booking backend is live!');
 });
 
-// ❗Important: Use only process.env.PORT for Render
-app.listen(process.env.PORT, () => {
-  console.log(`🚀 Server running on port ${process.env.PORT}`);
+// 🟢 Only use process.env.PORT for Render compatibility
+const port = process.env.PORT;
+app.listen(port, () => {
+  console.log(`🚀 Server running on port ${port}`);
 });
