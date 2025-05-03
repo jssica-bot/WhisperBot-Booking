@@ -9,8 +9,9 @@ const app = express();
 // 🔥 Allow Netlify frontend URL and handle preflight requests
 const corsOptions = {
   origin: 'https://melodic-centaur-3b71b3.netlify.app',
-  methods: 'GET,POST,OPTIONS',
-  allowedHeaders: 'Content-Type,Authorization'
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 };
 
 app.use(cors(corsOptions));
