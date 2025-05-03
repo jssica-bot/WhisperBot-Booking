@@ -6,23 +6,14 @@ require('dotenv').config();
 
 const app = express();
 
-// ✅ Allow CORS from all origins (or set to Netlify domain for stricter security)
+// 🔥 Allow Netlify frontend URL
 app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
+  origin: 'https://melodic-centaur-3b71b3.netlify.app'
 }));
-
-// ✅ Optional fallback for older browsers
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
 
 app.use(bodyParser.json());
 
-// ✅ MongoDB connection
+// MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -30,7 +21,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('✅ MongoDB connected'))
 .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// ✅ Booking schema & model
+// Schema
 const bookingSchema = new mongoose.Schema({
   fullName: String,
   email: String,
@@ -46,7 +37,7 @@ const bookingSchema = new mongoose.Schema({
 });
 const Booking = mongoose.model('Booking', bookingSchema);
 
-// ✅ POST endpoint
+// API route
 app.post('/api/book', async (req, res) => {
   try {
     console.log('📥 Received data:', req.body);
@@ -59,12 +50,11 @@ app.post('/api/book', async (req, res) => {
   }
 });
 
-// ✅ Default route
+// Default route
 app.get('/', (req, res) => {
   res.send('📡 WhisperBot Booking backend is live!');
 });
 
-// ✅ Start server using only environment PORT
 const port = process.env.PORT;
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
