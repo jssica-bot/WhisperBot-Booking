@@ -6,20 +6,20 @@ require('dotenv').config();
 
 const app = express();
 
-// 🔥 Allow Netlify frontend URL and handle preflight requests
+// ✅ Allow Netlify domain (and handle preflight OPTIONS request)
 const corsOptions = {
   origin: 'https://melodic-centaur-3b71b3.netlify.app',
-  methods:['GET', 'POST', 'OPTIONS'],
-  allowedHeaders:['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight requests
+app.options('*', cors(corsOptions)); // Preflight handling
 
 app.use(bodyParser.json());
 
-// MongoDB connection
+// ✅ MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -27,7 +27,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('✅ MongoDB connected'))
 .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// Schema
+// ✅ Schema
 const bookingSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   email: { type: String, required: true },
@@ -40,31 +40,25 @@ const bookingSchema = new mongoose.Schema({
 });
 const Booking = mongoose.model('Booking', bookingSchema);
 
-// API route
+// ✅ POST route
 app.post('/api/book', async (req, res) => {
   try {
-    console.log('📥 Received data:', req.body);
-    
-    // Validate request body
-    if (!req.body.fullName || !req.body.email || !req.body.phone || !req.body.date || !req.body.time || !req.body.service) {
-      return res.status(400).send('❌ Missing required fields');
-    }
-
     const booking = new Booking(req.body);
     await booking.save();
-    res.status(201).json({ message: '✅ Booking saved', booking });
+    res.status(201).json({ message: '✅ Booking saved' });
   } catch (err) {
-    console.error('❌ Failed to save booking:', err);
+    console.error('❌ Booking failed:', err);
     res.status(500).json({ error: '❌ Failed to save booking' });
   }
 });
 
-// Default route
+// ✅ Default test route
 app.get('/', (req, res) => {
-  res.send('📡 WhisperBot Booking backend is live!');
+  res.send('📡 Backend is live and CORS configured');
 });
 
-const port = process.env.PORT || 3000; // Ensure a default port if env var is missing
+// ✅ Ensure correct PORT binding for Render
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
 });
