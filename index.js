@@ -1,25 +1,23 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 
-// ✅ CORS config for Netlify
-const corsOptions = {
-  origin: 'https://melodic-centaur-3b71b3.netlify.app',
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
-
+// ✅ Manual CORS for Netlify frontend
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://melodic-centaur-3b71b3.netlify.app');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204); // Respond to preflight
+  }
+
   next();
 });
-app.options('*', cors(corsOptions)); // Preflight support
 
 app.use(bodyParser.json());
 
@@ -31,7 +29,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('✅ MongoDB connected'))
 .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// ✅ Booking Schema
+// ✅ Booking schema & model
 const bookingSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   email: { type: String, required: true },
@@ -44,7 +42,7 @@ const bookingSchema = new mongoose.Schema({
 });
 const Booking = mongoose.model('Booking', bookingSchema);
 
-// ✅ API endpoint
+// ✅ Booking API
 app.post('/api/book', async (req, res) => {
   try {
     const booking = new Booking(req.body);
@@ -56,12 +54,12 @@ app.post('/api/book', async (req, res) => {
   }
 });
 
-// ✅ Health check
+// ✅ Root endpoint
 app.get('/', (req, res) => {
-  res.send('📡 Backend is running and CORS is enabled.');
+  res.send('📡 WhisperBot Booking backend is running.');
 });
 
-// ✅ PORT (for Render)
+// ✅ PORT for Render
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
