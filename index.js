@@ -6,15 +6,15 @@ require('dotenv').config();
 
 const app = express();
 
-// ✅ CORS: Allow Netlify frontend
+// ✅ CORS config for Netlify
 const corsOptions = {
   origin: 'https://melodic-centaur-3b71b3.netlify.app',
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
 };
+
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight requests
+app.options('*', cors(corsOptions)); // Preflight support
 
 app.use(bodyParser.json());
 
@@ -26,7 +26,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('✅ MongoDB connected'))
 .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// ✅ Mongoose schema
+// ✅ Booking Schema
 const bookingSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   email: { type: String, required: true },
@@ -39,7 +39,7 @@ const bookingSchema = new mongoose.Schema({
 });
 const Booking = mongoose.model('Booking', bookingSchema);
 
-// ✅ API POST route
+// ✅ API endpoint
 app.post('/api/book', async (req, res) => {
   try {
     const booking = new Booking(req.body);
@@ -51,12 +51,12 @@ app.post('/api/book', async (req, res) => {
   }
 });
 
-// ✅ Test route
+// ✅ Health check
 app.get('/', (req, res) => {
-  res.send('📡 WhisperBot backend is live and CORS is working!');
+  res.send('📡 Backend is running and CORS is enabled.');
 });
 
-// ✅ Port binding for Render
+// ✅ PORT (for Render)
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
