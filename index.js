@@ -13,7 +13,12 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-app.use(cors({ origin: 'https://melodic-centaur-3b71b3.netlify.app' }));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://melodic-centaur-3b71b3.netlify.app');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  next();
+});
 app.options('*', cors(corsOptions)); // Preflight support
 
 app.use(bodyParser.json());
