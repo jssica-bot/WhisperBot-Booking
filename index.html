@@ -105,11 +105,13 @@
         body: JSON.stringify(data)
       });
 
+      const result = await response.json();
+
       if (response.ok) {
-        alert('✅ Booking submitted successfully!');
+        alert(result.message || '✅ Booking submitted successfully!');
         form.reset();
       } else {
-        alert('❌ Failed to submit booking.');
+        alert(result.error || '❌ Failed to submit booking.');
       }
     } catch (error) {
       console.error('❌ Error submitting:', error);
