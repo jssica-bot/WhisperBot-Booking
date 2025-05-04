@@ -5,20 +5,20 @@ require('dotenv').config();
 
 const app = express();
 
-// ✅ Manual CORS Middleware
+// ✅ Manual CORS Middleware for Netlify frontend
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://melodic-centaur-3b71b3.netlify.app');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
+    return res.status(200).end(); // Preflight OK
   }
   next();
 });
 
 app.use(bodyParser.json());
 
-// ✅ MongoDB connection
+// ✅ Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -26,20 +26,20 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('✅ MongoDB connected'))
 .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// ✅ Schema
+// ✅ Booking Schema
 const bookingSchema = new mongoose.Schema({
-  fullName: String,
-  email: String,
-  phone: String,
-  date: String,
-  time: String,
-  service: String,
+  fullName: { type: String, required: true },
+  email: { type: String, required: true },
+  phone: { type: String, required: true },
+  date: { type: String, required: true },
+  time: { type: String, required: true },
+  service: { type: String, required: true },
   notes: String,
   createdAt: { type: Date, default: Date.now }
 });
 const Booking = mongoose.model('Booking', bookingSchema);
 
-// ✅ API endpoint
+// ✅ API endpoint for POST booking
 app.post('/api/book', async (req, res) => {
   try {
     const booking = new Booking(req.body);
@@ -51,12 +51,12 @@ app.post('/api/book', async (req, res) => {
   }
 });
 
-// ✅ Health check
+// ✅ Root route for check
 app.get('/', (req, res) => {
-  res.send('📡 Backend is live.');
+  res.send('📡 WhisperBot Backend is live!');
 });
 
-// ✅ Port binding for Render
+// ✅ Port binding
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
